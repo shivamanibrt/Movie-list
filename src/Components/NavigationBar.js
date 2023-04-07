@@ -12,12 +12,12 @@ import { CustomCard } from './CustomCard'
 import { Row, Col } from 'react-bootstrap'
 import { Alert } from 'react-bootstrap';
 
-export const NavigationBar = ({ }) => {
+export const NavigationBar = ({ addMovieToList }) => {
     const strRef = useRef('');
     const [searchedMovies, setSearchedMovies] = useState({});
     const [error, setError] = useState(false);
 
-    const handelOnClick = async (e) => {
+    const handelOnSubmit = async (e) => {
         e.preventDefault();
         error && setError(false)
         const str = strRef.current.value;
@@ -28,6 +28,12 @@ export const NavigationBar = ({ }) => {
         else {
             setError(true);
         }
+    }
+
+    const func = (mode) => {
+        addMovieToList({ ...searchedMovies, mode });
+        setSearchedMovies({});
+        strRef.current.value = "";
     }
 
     return (
@@ -46,7 +52,7 @@ export const NavigationBar = ({ }) => {
                     <Navbar.Collapse id="navbarScroll">
                         <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
                         </Nav>
-                        <Form className="d-flex" onClick={handelOnClick}>
+                        <Form className="d-flex" onClick={handelOnSubmit}>
                             <Form.Control ref={strRef} placeholder="Search Movies" className="me-3" aria-label="Search" />
                             <Button type='submit' class="btn btn-secondary">Search</Button>
                         </Form>
@@ -64,17 +70,16 @@ export const NavigationBar = ({ }) => {
                         </Col>
                     </Row>
                     <hr className="text-warning" />
-                    <div className='d-flex justify-content-center p-3'>
-                        <Row>
-                            <Col>
-                                {error ? (
-                                    <Alert variant='danger'>Movie not found!</Alert>
-                                ) : (
-                                    <CustomCard searchedMovies={searchedMovies} />
-                                )}
+                    <div className='d-flex justify-content-center mt-4'>
+                        {/* if error exist show alert */}
+                        {error && <Alert variant='danger'>Movie not found!</Alert>}
 
-                            </Col>
-                        </Row>
+                        {/* else show the card if searchmovie.id exist  */}
+                        {searchedMovies.imdbID &&
+                            (< CustomCard searchedMovies={searchedMovies} func={func}
+                            />)}
+
+
                     </div>
 
                 </Container >
